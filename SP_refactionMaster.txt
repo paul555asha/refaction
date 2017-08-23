@@ -1,0 +1,87 @@
+
+CREATE PROCEDURE [dbo].[ProcProducts]
+	-- Add the parameters for the stored procedure here
+@FLAGMODE int,
+@ID uniqueidentifier = null,
+@PRODOPTIONID uniqueidentifier = NULL,
+@PRODUCTID uniqueidentifier = NULL,
+@NAME varchar(50) = null,
+@DESCRIPTION varchar(50) = null,
+@PRICE money = null,
+@DELIVERYPRICE money= null
+
+AS
+IF(@FLAGMODE = 1)
+BEGIN
+	
+    -- gets all the product details
+	SELECT * FROM Product WITH (NOLOCK)
+END
+IF(@FLAGMODE = 2)
+BEGIN
+	
+    -- gets the product details based on given name
+	SELECT * FROM Product WHERE NAME=@NAME
+END
+
+IF(@FLAGMODE = 3)
+BEGIN
+	    -- Add new product item
+	INSERT INTO Product (ID,NAME, Description, Price,DeliveryPrice) VALUES (@ID,@NAME,@DESCRIPTION,@PRICE,@DELIVERYPRICE)
+END
+
+IF(@FLAGMODE = 4)
+BEGIN
+	
+    -- Delete product and its options based on given product Id
+	Delete from Product where id = @ID
+	Delete from ProductOption where ProductId = @ID	
+ 
+END
+IF(@FLAGMODE = 5)
+BEGIN
+	    -- Delete product based on given product Id
+	UPDATE Product SET Name = @NAME,Description=@DESCRIPTION,Price = @PRICE,DeliveryPrice = @DELIVERYPRICE where ID = @ID
+END
+IF(@FLAGMODE = 6)
+BEGIN
+	
+    -- Gets all the productoption details
+	SELECT * FROM ProductOption WITH (NOLOCK)
+END
+IF(@FLAGMODE = 7)
+BEGIN
+	
+    -- Gets all the productoption details based on name
+	SELECT * FROM ProductOption WHERE NAME=@NAME
+END
+
+IF(@FLAGMODE = 8)
+BEGIN	
+      -- Adds the productoption item
+	INSERT INTO ProductOption (Id,ProductId,NAME, Description) VALUES (@ID,@PRODUCTID,@NAME,@DESCRIPTION)
+END
+
+IF(@FLAGMODE = 9)
+BEGIN
+
+    -- delete productoption item based on id
+	DELETE FROM ProductOption WHERE ID=@id
+END
+IF(@FLAGMODE = 10)
+BEGIN
+	
+    -- update productoption item based on id
+	UPDATE ProductOption SET Name = @NAME,Description=@DESCRIPTION,ProductId = @PRODUCTID where ID = @ID
+END
+
+IF(@FLAGMODE = 11)
+BEGIN
+	    -- finds all options for a specified product.
+	SELECT A.Name,A.Description FROM ProductOption AS A INNER JOIN PRODUCT B ON A.ProductId = B.Id
+END
+IF(@FLAGMODE = 12)
+BEGIN
+    -- finds the specified product option for the specified product.
+	SELECT A.Name,A.Description FROM ProductOption AS A INNER JOIN PRODUCT B ON A.ProductId = B.Id AND A.Id = @PRODUCTID
+END
